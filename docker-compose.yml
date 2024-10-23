@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codeigniter-web
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./source:/var/www/html
+      - ./000-default.conf:/etc/apache2/sites-available/000-default.conf
+    depends_on:
+      - mysql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: unless-stopped
+    ports:
+      - "94:80"
+
+  mysql:
+    image: mysql:5.7
+    container_name: codeigniter-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: trade
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306"
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
